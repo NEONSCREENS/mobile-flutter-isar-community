@@ -76,7 +76,17 @@ extension PropertyElementX on PropertyInducingElement2 {
   }
 
   List<Index> get indexAnnotations {
-    return _indexChecker.annotationsOfExact(this).map((DartObject ann) {
+
+    var annotations = _indexChecker.annotationsOfExact(this);
+    
+    if (isSynthetic && getter2 != null) {
+      annotations = [
+        ...annotations,
+        ..._indexChecker.annotationsOfExact(getter2!)
+      ];
+    }
+    
+    return annotations.map((DartObject ann) {
       final rawComposite = ann.getField('composite')!.toListValue();
       final composite = <CompositeIndex>[];
       if (rawComposite != null) {

@@ -249,7 +249,6 @@ void main() {
       );
     });
 
-    // //TODO: This needs to be fixed
     isarTest('Query model with inherited index', () async {
       await qEqualSet(
         isar.inheritingModels
