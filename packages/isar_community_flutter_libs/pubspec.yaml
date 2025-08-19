@@ -32,7 +32,3 @@ flutter:
         pluginClass: IsarFlutterLibsPlugin
       windows:
         pluginClass: IsarFlutterLibsPlugin
-
-dependency_overrides:
-  isar_community:
-    path: ../isar_community
