@@ -78,4 +78,4 @@ coverage/
 .fvmrc
 
 # User defined tooling
-./tool/contributor
+tool/contributor
