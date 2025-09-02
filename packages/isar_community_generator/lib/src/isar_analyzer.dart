@@ -3,7 +3,6 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartx/dartx.dart';
 import 'package:isar_community/isar.dart';
-
 import 'package:isar_community_generator/src/helper.dart';
 import 'package:isar_community_generator/src/isar_type.dart';
 import 'package:isar_community_generator/src/object_info.dart';
@@ -117,8 +116,9 @@ class IsarAnalyzer {
       err('Class must be public.', modelClass);
     }
 
-    final constructor = modelClass.constructors2
-        .firstOrNullWhere((ConstructorElement2 c) => null == c.firstFragment.periodOffset);
+    final constructor = modelClass.constructors2.firstOrNullWhere(
+      (ConstructorElement2 c) => null == c.firstFragment.periodOffset,
+    );
     if (constructor == null) {
       err('Class needs an unnamed constructor.', modelClass);
     }
@@ -150,7 +150,8 @@ class IsarAnalyzer {
       );
     }
 
-    final unknownConstructorParameter = constructor.formalParameters.firstOrNullWhere(
+    final unknownConstructorParameter =
+        constructor.formalParameters.firstOrNullWhere(
       (p) => p.isRequired && properties.none((e) => e.dartName == p.name3),
     );
     if (unknownConstructorParameter != null) {
@@ -205,14 +206,16 @@ class IsarAnalyzer {
       if (enumeratedAnn.type == EnumType.ordinal) {
         isarType = dartType.isDartCoreList ? IsarType.byteList : IsarType.byte;
         enumMap = {
-          for (var i = 0; i < enumElements.length; i++) enumElements[i].name3!: i,
+          for (var i = 0; i < enumElements.length; i++)
+            enumElements[i].name3!: i,
         };
         enumPropertyName = 'index';
       } else if (enumeratedAnn.type == EnumType.ordinal32) {
         isarType = dartType.isDartCoreList ? IsarType.intList : IsarType.int;
 
         enumMap = {
-          for (var i = 0; i < enumElements.length; i++) enumElements[i].name3!: i,
+          for (var i = 0; i < enumElements.length; i++)
+            enumElements[i].name3!: i,
         };
         enumPropertyName = 'index';
       } else if (enumeratedAnn.type == EnumType.name) {
@@ -288,8 +291,9 @@ class IsarAnalyzer {
       err('Bytes must not be nullable.', property);
     }
 
-    final constructorParameter =
-        constructor.formalParameters.firstOrNullWhere((p) => p.name3 == property.name3);
+    final constructorParameter = constructor.formalParameters
+        .firstOrNullWhere((p) => p.name3 == property.name3);
+
     int? constructorPosition;
     late PropertyDeser deserialize;
     if (constructorParameter != null) {
@@ -312,7 +316,7 @@ class IsarAnalyzer {
     return ObjectProperty(
       dartName: property.displayName,
       isarName: property.isarName,
-      typeClassName: dartType.scalarType.element!.name!,
+      typeClassName: dartType.scalarType.element3!.name3!,
       targetIsarName: isarType.containsObject
           ? dartType.scalarType.element3!.isarName
           : null,
@@ -372,7 +376,7 @@ class IsarAnalyzer {
       dartName: property.displayName,
       isarName: property.isarName,
       targetLinkIsarName: targetLinkIsarName,
-      targetCollectionDartName: linkType.element!.name!,
+      targetCollectionDartName: linkType.element3!.name3!,
       targetCollectionIsarName: targetCol.isarName,
       isSingle: property.isLink,
     );

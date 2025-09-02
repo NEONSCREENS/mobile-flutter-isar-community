@@ -31,7 +31,8 @@ extension ClassElementX on ClassElement2 {
       if (collectionAnnotation?.inheritance ?? embeddedAnnotation!.inheritance)
         for (final InterfaceType supertype in allSupertypes) ...[
           if (!supertype.isDartCoreObject)
-            ...[...supertype.getters, ...supertype.setters].mapNotNull((e) => e.variable3),
+            ...[...supertype.getters, ...supertype.setters]
+                .mapNotNull((e) => e.variable3),
         ],
     ]
         .where(
@@ -46,7 +47,11 @@ extension ClassElementX on ClassElement2 {
   }
 
   List<String> get enumConsts {
-    return fields2.where((e) => e.isEnumConstant).filter((e) => e.name3 != null).map((e) => e.name3!).toList();
+    return fields2
+        .where((e) => e.isEnumConstant)
+        .filter((e) => e.name3 != null)
+        .map((e) => e.name3!)
+        .toList();
   }
 }
 
@@ -76,16 +81,15 @@ extension PropertyElementX on PropertyInducingElement2 {
   }
 
   List<Index> get indexAnnotations {
-
     var annotations = _indexChecker.annotationsOfExact(this);
-    
+
     if (isSynthetic && getter2 != null) {
       annotations = [
         ...annotations,
-        ..._indexChecker.annotationsOfExact(getter2!)
+        ..._indexChecker.annotationsOfExact(getter2!),
       ];
     }
-    
+
     return annotations.map((DartObject ann) {
       final rawComposite = ann.getField('composite')!.toListValue();
       final composite = <CompositeIndex>[];
