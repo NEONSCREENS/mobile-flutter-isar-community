@@ -6,7 +6,7 @@ import 'package:isar_community_generator/isar_generator.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
-void main() async {
+void main() {
   group('Error case', () {
     for (final file in Directory('test/errors').listSync(recursive: true)) {
       if (file is! File || !file.path.endsWith('.dart')) continue;
