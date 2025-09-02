@@ -44,7 +44,6 @@ dev_dependencies:
     sdk: flutter
   isar_community_generator: *isar_version
   flutter_lints: ^2.0.1
-  copy_with_extension_gen: ^8.0.0
 
 flutter:
   uses-material-design: true

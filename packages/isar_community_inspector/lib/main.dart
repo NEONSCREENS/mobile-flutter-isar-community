@@ -70,8 +70,8 @@ final _router = GoRouter(
           child: Scaffold(
             body: Material(
               child: ConnectionScreen(
-                port: state.pathParameters['port']!,
-                secret: state.pathParameters['secret']!,
+                port: state.params['port']!,
+                secret: state.params['secret']!,
               ),
             ),
           ),
