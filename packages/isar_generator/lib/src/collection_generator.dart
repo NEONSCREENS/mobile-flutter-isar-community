@@ -16,6 +16,39 @@ import 'package:isar_generator/src/code_gen/type_adapter_generator.dart';
 import 'package:isar_generator/src/isar_analyzer.dart';
 import 'package:source_gen/source_gen.dart';
 
+/// Constant for the web-safe hash function
+const String webSafeHashFunction = '''
+/// Web-safe hash function that generates consistent IDs across platforms
+/// without using large integer literals that break JavaScript compilation
+int _webSafeHash(String input, [int seed = 0]) {
+  // Use a simple but effective hash algorithm that works on all platforms
+  // This is based on the djb2 algorithm but modified to stay within safe integer range
+  var hash = 5381 + seed;
+  for (var i = 0; i < input.length; i++) {
+    hash = ((hash << 5) + hash + input.codeUnitAt(i)) & 0x7FFFFFFF;
+  }
+  return hash;
+}
+
+''';
+
+// Global state to track if _webSafeHash has been generated in the current build
+final Map<String, bool> _webSafeHashGenerated = <String, bool>{};
+
+/// Generates the web-safe hash function if it hasn't been generated yet for this file
+String generateWebSafeHashFunction(String fileName) {
+  if (_webSafeHashGenerated[fileName] == true) {
+    return '';
+  }
+  _webSafeHashGenerated[fileName] = true;
+  return webSafeHashFunction;
+}
+
+/// Resets the web-safe hash generation state (for testing purposes)
+void resetWebSafeHashGeneration() {
+  _webSafeHashGenerated.clear();
+}
+
 const ignoreLints = [
   'duplicate_ignore',
   'non_constant_identifier_names',
@@ -44,23 +77,13 @@ class IsarCollectionGenerator extends GeneratorForAnnotation<Collection> {
     BuildStep buildStep,
   ) async {
     final object = IsarAnalyzer().analyzeCollection(element);
+    final fileName = buildStep.inputId.path;
+
     return '''
       // coverage:ignore-file
       // ignore_for_file: ${ignoreLints.join(', ')}
 
-      /// Web-safe hash function that generates consistent IDs across platforms
-      /// without using large integer literals that break JavaScript compilation
-      int _webSafeHash(String input, [int seed = 0]) {
-        // Use a simple but effective hash algorithm that works on all platforms
-        // This is based on the djb2 algorithm but modified to stay within safe integer range
-        var hash = 5381 + seed;
-        for (var i = 0; i < input.length; i++) {
-          hash = ((hash << 5) + hash + input.codeUnitAt(i)) & 0x7FFFFFFF;
-        }
-        return hash;
-      }
-
-      extension Get${object.dartName}Collection on Isar {
+      ${generateWebSafeHashFunction(fileName)}extension Get${object.dartName}Collection on Isar {
         IsarCollection<${object.dartName}> get ${object.accessor} => this.collection();
       }
 
@@ -97,23 +120,13 @@ class IsarEmbeddedGenerator extends GeneratorForAnnotation<Embedded> {
     BuildStep buildStep,
   ) async {
     final object = IsarAnalyzer().analyzeEmbedded(element);
+    final fileName = buildStep.inputId.path;
+
     return '''
       // coverage:ignore-file
       // ignore_for_file: ${ignoreLints.join(', ')}
 
-      /// Web-safe hash function that generates consistent IDs across platforms
-      /// without using large integer literals that break JavaScript compilation
-      int _webSafeHash(String input, [int seed = 0]) {
-        // Use a simple but effective hash algorithm that works on all platforms
-        // This is based on the djb2 algorithm but modified to stay within safe integer range
-        var hash = 5381 + seed;
-        for (var i = 0; i < input.length; i++) {
-          hash = ((hash << 5) + hash + input.codeUnitAt(i)) & 0x7FFFFFFF;
-        }
-        return hash;
-      }
-
-      ${generateSchema(object)}
+      ${generateWebSafeHashFunction(fileName)}${generateSchema(object)}
 
       ${generateEstimateSerialize(object)}
       ${generateSerialize(object)}
@@ -127,3 +140,5 @@ class IsarEmbeddedGenerator extends GeneratorForAnnotation<Embedded> {
     ''';
   }
 }
+
+

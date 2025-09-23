@@ -1,6 +1,7 @@
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:isar_generator/isar_generator.dart';
+import 'package:isar_generator/src/collection_generator.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -182,6 +183,79 @@ class Person {
       expect(generatedCode, isNot(contains('const AddressSchema')));
     });
 
+    test('does not generate duplicate _webSafeHash functions', () async {
+      // Reset the global state before the test
+      resetWebSafeHashGeneration();
+
+      const source = '''
+import 'package:isar/isar.dart';
+
+@collection
+class LocationEntity {
+  LocationEntity();
+
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  late String locationId;
+
+  late String playerId;
+  String? title;
+  String? status;
+  String? timezone;
+
+  CompanyEntity? company;
+  VenueEntity? venue;
+
+  @Index()
+  late DateTime cachedAt;
+}
+
+@embedded
+class CompanyEntity {
+  CompanyEntity();
+
+  String? id;
+  String? name;
+  String? status;
+  String? accountType;
+}
+
+@embedded
+class VenueEntity {
+  VenueEntity();
+
+  String? name;
+  String? streetAddress;
+  String? timezone;
+}
+''';
+
+      final result = await testBuilder(
+        getIsarGenerator(BuilderOptions.empty),
+        {'a|lib/location_entity.dart': source},
+        reader: await PackageAssetReader.currentIsolate(),
+      );
+
+      final generatedCode = result['a|lib/location_entity.g.dart']!;
+
+      // Count occurrences of _webSafeHash function definition
+      final hashFunctionPattern = RegExp(r'int _webSafeHash\(String input, \[int seed = 0\]\)');
+      final matches = hashFunctionPattern.allMatches(generatedCode);
+
+      // Should only have one occurrence of the function
+      expect(matches.length, equals(1),
+          reason: 'Expected exactly one _webSafeHash function, but found ${matches.length}. Generated code:\n$generatedCode');
+
+      // Should still contain the function
+      expect(generatedCode, contains('int _webSafeHash(String input, [int seed = 0])'));
+
+      // Should generate schemas for all entities
+      expect(generatedCode, contains('final LocationEntitySchema = CollectionSchema('));
+      expect(generatedCode, contains('final CompanyEntitySchema = Schema('));
+      expect(generatedCode, contains('final VenueEntitySchema = Schema('));
+    });
+
     test('handles complex collection with multiple features', () async {
       const source = '''
 import 'package:isar/isar.dart';
@@ -195,7 +269,7 @@ class Tag {
 @collection
 class Article {
   Id id = Isar.autoIncrement;
-  
+
   @Index()
   String? title;
   
