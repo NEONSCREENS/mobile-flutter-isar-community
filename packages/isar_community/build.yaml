@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      isar_community_generator:isar_community_generator:
+        enabled: true
+        generate_for:
+          - test/**
+        options:
+          auto_increment: true

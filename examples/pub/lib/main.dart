@@ -23,10 +23,11 @@ class PubApp extends ConsumerWidget {
       ),
       GoRoute(
         path: '/packages/:package/versions/:version',
-        builder: (context, state) => DetailPage(
-          name: state.params['package']!,
-          version: state.params['version'],
-        ),
+        builder:
+            (context, state) => DetailPage(
+              name: state.params['package']!,
+              version: state.params['version'],
+            ),
       ),
       GoRoute(
         path: '/search/:query',

@@ -96,12 +96,10 @@ class Package {
   }
 
   Package copyWithMetrics(ApiPackageMetrics metrics) {
-    final publishers = metrics.tags
-        .where((t) => t.startsWith('publisher:'))
-        .toList();
-    final publisher = publishers.isNotEmpty
-        ? publishers.first.substring(10)
-        : null;
+    final publishers =
+        metrics.tags.where((t) => t.startsWith('publisher:')).toList();
+    final publisher =
+        publishers.isNotEmpty ? publishers.first.substring(10) : null;
     return copyWith(
       points: metrics.grantedPoints,
       likes: metrics.likeCount,
@@ -110,16 +108,17 @@ class Package {
       dart: metrics.tags.contains('sdk:dart'),
       flutter: metrics.tags.contains('sdk:flutter'),
       flutterFavorite: metrics.tags.contains('is:flutter-favorite'),
-      license: metrics.tags
-          .firstWhere(
-            (e) =>
-                e.startsWith('license:') &&
-                e != 'license:osi-approved' &&
-                e != 'license:fsf-libre',
-            orElse: () => 'license:unknown',
-          )
-          .substring(8)
-          .toUpperCase(),
+      license:
+          metrics.tags
+              .firstWhere(
+                (e) =>
+                    e.startsWith('license:') &&
+                    e != 'license:osi-approved' &&
+                    e != 'license:fsf-libre',
+                orElse: () => 'license:unknown',
+              )
+              .substring(8)
+              .toUpperCase(),
       osiLicense: metrics.tags.contains('license:osi-approved'),
       platforms: [
         if (metrics.tags.contains('platform:web')) SupportedPlatform.web,
@@ -149,9 +148,8 @@ class Dependency {
     final dependencies = <Dependency>[];
     for (final package in dependenciesMap.keys) {
       final dep = dependenciesMap[package]!;
-      final constraint = dep is HostedReference
-          ? dep.versionConstraint.toString()
-          : 'unknown';
+      final constraint =
+          dep is HostedReference ? dep.versionConstraint.toString() : 'unknown';
       dependencies.add(Dependency(name: package, constraint: constraint));
     }
 

@@ -254,12 +254,14 @@ Package _packageDeserialize(
     likes: reader.readIntOrNull(offsets[10]),
     name: reader.readString(offsets[11]),
     osiLicense: reader.readBoolOrNull(offsets[12]),
-    platforms: reader
-        .readByteList(offsets[13])
-        ?.map(
-          (e) => _PackageplatformsValueEnumMap[e] ?? SupportedPlatform.android,
-        )
-        .toList(),
+    platforms:
+        reader
+            .readByteList(offsets[13])
+            ?.map(
+              (e) =>
+                  _PackageplatformsValueEnumMap[e] ?? SupportedPlatform.android,
+            )
+            .toList(),
     points: reader.readIntOrNull(offsets[14]),
     popularity: reader.readFloatOrNull(offsets[15]),
     published: reader.readDateTime(offsets[16]),
